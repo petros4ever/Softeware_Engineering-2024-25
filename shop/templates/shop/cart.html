@@ -1,0 +1,27 @@
+<!-- shop/templates/shop/cart.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Cart</title>
+</head>
+<body>
+    <h1>Το καλάθι μου</h1>
+    <ul>
+    {% for book in books_in_cart %}
+        <li>
+            <strong>{{ book.title }}</strong> by {{ book.author }} — {{ book.price }}€
+        </li>
+    {% empty %}
+        <li>Δεν υπάρχουν βιβλία στο καλάθι.</li>
+    {% endfor %}
+    </ul>
+
+     {% if books_in_cart %}
+    <form action="{% url 'checkout' %}" method="get">
+        <button type="submit">Πληρωμή</button>
+    </form>
+    {% endif %}
+
+    <p><a href="{% url 'home' %}">Συνέχεια αγορών</a></p>
+</body>
+</html>

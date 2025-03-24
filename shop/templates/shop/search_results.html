@@ -1,0 +1,21 @@
+<!-- shop/templates/shop/search_results.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Αποτελέσματα Αναζήτησης</title>
+</head>
+<body>
+    <h1>Αποτελέσματα για "{{ query }}"</h1>
+    <ul>
+        {% for book in books %}
+        <li>
+            <strong>{{ book.title }}</strong> - {{ book.author }} - {{ book.price }}€
+            <a href="{% url 'add_to_cart' book.id %}">Προσθήκη στο καλάθι</a>
+        </li>
+        {% empty %}
+        <li>Δεν βρέθηκαν αποτελέσματα.</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'home' %}">Επιστροφή στην αρχική σελίδα</a>
+</body>
+</html>
