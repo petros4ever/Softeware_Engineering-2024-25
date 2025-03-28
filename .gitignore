@@ -1,0 +1,19 @@
+# IDE
+/shelf/
+/.idea/
+/workspace.xml
+*.iml
+
+# Database
+*.sqlite3
+*.db
+
+# Python
+__pycache__/
+*.py[cod]
+.env
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
