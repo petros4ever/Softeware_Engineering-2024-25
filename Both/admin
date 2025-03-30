@@ -1,14 +1,23 @@
 from kivy.lang import Builder
 from kivymd.app import MDApp
-from kivymd.uix.screen import Screen
+from kivymd.uix.screen import Screen, ScreenManager
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.list import OneLineListItem
-from kivymd.uix.toolbar import MDTopAppBar
-from kivymd.uix.button import MDRaisedButton
+from kivymd.uix.list import OneLineListItem, IRightBodyTouch
 from kivymd.uix.expansionpanel import MDExpansionPanel, MDExpansionPanelOneLine
+from kivymd.uix.textfield import MDTextField
+from kivymd.uix.button import MDRaisedButton, MDIconButton
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.scrollview import ScrollView
 
 KV = """
-MDScreen:
+ScreenManager:
+    MainScreen:
+    AdminScreen:
+    UploadScreen:
+
+<MainScreen>:
+    name: "main"
+
     MDBoxLayout:
         orientation: 'vertical'
 
@@ -28,33 +37,129 @@ MDScreen:
                 orientation: 'vertical'
                 size_hint_y: None
                 height: self.minimum_height
+                padding: "10dp"
+                spacing: "10dp"
 
         MDRaisedButton:
             text: "Admin Panel"
             pos_hint: {"center_x": 0.5}
-            on_release: app.open_admin_panel()
+            on_release: app.switch_to_admin_panel()
+
+<AdminScreen>:
+    name: "admin"
+
+    MDBoxLayout:
+        orientation: 'vertical'
+
+        MDTopAppBar:
+            title: "Admin Panel"
+            left_action_items: [["arrow-left", lambda x: app.switch_to_main_screen()]]
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            spacing: "20dp"
+            padding: "20dp"
+
+            MDRaisedButton:
+                text: "Ανέβασμα Βιβλίων"
+                pos_hint: {"center_x": 0.5}
+                on_release: app.switch_to_upload_screen()
+
+            MDRaisedButton:
+                text: "Έκπτωση Κατηγορίας Βιβλίου"
+                pos_hint: {"center_x": 0.5}
+                on_release: app.discount_category()
+
+            MDRaisedButton:
+                text: "Διαγραφή Κακόβουλου Σχολίου"
+                pos_hint: {"center_x": 0.5}
+                on_release: app.delete_comment()
+
+<UploadScreen>:
+    name: "upload"
+
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding: "20dp"
+        spacing: "10dp"
+
+        MDTopAppBar:
+            title: "Upload Book"
+            left_action_items: [["arrow-left", lambda x: app.switch_to_admin_panel()]]
+
+        MDTextField:
+            id: book_name
+            hint_text: "Όνομα Βιβλίου"
+
+        MDTextField:
+            id: author_name
+            hint_text: "Συγγραφέας"
+
+        MDTextField:
+            id: book_price
+            hint_text: "Τιμή Βιβλίου"
+            input_filter: "float"
+
+        MDTextField:
+            id: book_category
+            hint_text: "Κατηγορία"
+
+        MDRaisedButton:
+            text: "Αποθήκευση"
+            pos_hint: {"center_x": 0.5}
+            on_release: app.save_book()
 """
+
+
+class Book:
+    def __init__(self, name, author, price, category):
+        self.name = name
+        self.author = author
+        self.price = price
+        self.category = category
+
+
+class MainScreen(Screen):
+    pass
+
+
+class AdminScreen(Screen):
+    pass
+
+
+class UploadScreen(Screen):
+    pass
 
 
 class AdminApp(MDApp):
     def build(self):
-        return Builder.load_string(KV)
-
-    def on_start(self):
-        book_data = {
+        self.books = {
             "Fiction": ["Book 1", "Book 2"],
             "Non-Fiction": ["Book 3", "Book 4"],
             "Science": ["Book 5", "Book 6"],
             "History": ["Book 7", "Book 8"],
             "Technology": ["AI Revolution", "Cyber Security 101", "Python for AI"]
         }
+        return Builder.load_string(KV)
 
-        for category, books in book_data.items():
-            panel_content = MDBoxLayout(orientation='vertical', adaptive_height=True)
+    def on_start(self):
+        self.update_book_list()
+
+    def update_book_list(self):
+        book_list = self.root.get_screen('main').ids.book_list
+        book_list.clear_widgets()
+
+        for category, books in self.books.items():
+            panel_content = MDBoxLayout(orientation='vertical', adaptive_height=True, padding="10dp", spacing="10dp")
             for book in books:
-                panel_content.add_widget(OneLineListItem(text=book))
+                book_item = BoxLayout(orientation='horizontal', size_hint_y=None, height=40)
+                book_item.add_widget(OneLineListItem(text=book))
+                delete_btn = MDIconButton(icon="delete",
+                                          on_release=lambda x, c=category, b=book: self.delete_book(c, b))
+                book_item.add_widget(delete_btn)
+                panel_content.add_widget(book_item)
 
-            self.root.ids.book_list.add_widget(
+            book_list.add_widget(
                 MDExpansionPanel(
                     content=panel_content,
                     panel_cls=MDExpansionPanelOneLine(text=category)
@@ -64,8 +169,47 @@ class AdminApp(MDApp):
     def show_profile(self):
         print("Opening Profile Page")
 
-    def open_admin_panel(self):
-        print("Navigating to Admin Panel")
+    def switch_to_admin_panel(self):
+        self.root.current = "admin"
+
+    def switch_to_main_screen(self):
+        self.root.current = "main"
+
+    def switch_to_upload_screen(self):
+        self.root.current = "upload"
+
+    def upload_books(self):
+        print("Uploading Books")
+
+    def discount_category(self):
+        print("Applying Discount to Book Category")
+
+    def delete_comment(self):
+        print("Deleting Malicious Comment")
+
+    def save_book(self):
+        name = self.root.get_screen('upload').ids.book_name.text
+        author = self.root.get_screen('upload').ids.author_name.text
+        price = self.root.get_screen('upload').ids.book_price.text
+        category = self.root.get_screen('upload').ids.book_category.text
+
+        if name and author and price and category:
+            if category not in self.books:
+                self.books[category] = []
+            self.books[category].append(name)
+            print(f"Saved: {name}, {author}, {price}, {category}")
+            self.update_book_list()
+            self.switch_to_admin_panel()
+        else:
+            print("Please fill all fields")
+
+    def delete_book(self, category, book):
+        if category in self.books and book in self.books[category]:
+            self.books[category].remove(book)
+            if not self.books[category]:
+                del self.books[category]
+            print(f"Deleted: {book} from {category}")
+            self.update_book_list()
 
 
 AdminApp().run()
