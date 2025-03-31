@@ -1,4 +1,3 @@
-
 from kivy.lang import Builder
 from kivymd.app import MDApp
 from kivymd.uix.screen import Screen, ScreenManager
@@ -71,6 +70,19 @@ ScreenManager:
                 text: "Έκπτωση Κατηγορίας Βιβλίου"
                 pos_hint: {"center_x": 0.5}
                 on_release: app.discount_category()
+                
+            MDTextField:
+                id: category_name
+                hint_text: "Κατηγορία για Έκπτωση"
+                size_hint_x: 0.8
+                pos_hint: {"center_x": 0.5}
+
+            MDTextField:
+                id: discount_percentage
+                hint_text: "Ποσοστό Έκπτωσης"
+                size_hint_x: 0.8
+                pos_hint: {"center_x": 0.5}
+                input_filter: "float"
 
             MDRaisedButton:
                 text: "Διαγραφή Κακόβουλου Σχολίου"
@@ -195,6 +207,19 @@ class AdminApp(MDApp):
 
     def switch_to_upload_screen(self):
         self.root.current = "upload"
+
+    def discount_category(self):
+        # Ζήτα από τον χρήστη την κατηγορία και την έκπτωση
+        category = self.root.get_screen('admin').ids.category_name.text  # Παράδειγμα, αν θες το input από το UI
+        discount_percentage = float(
+            self.root.get_screen('admin').ids.discount_percentage.text)  # Αν το πάρεις από το UI
+
+        if category in self.books:
+            for book in self.books[category]:
+                book.price = str(round(float(book.price) * (1 - discount_percentage / 100), 2))
+            self.update_book_list()
+        else:
+            print("Η κατηγορία δεν βρέθηκε")
 
 
 AdminApp().run()
