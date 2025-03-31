@@ -1,3 +1,4 @@
+
 from kivy.lang import Builder
 from kivymd.app import MDApp
 from kivymd.uix.screen import Screen, ScreenManager
@@ -8,6 +9,7 @@ from kivymd.uix.textfield import MDTextField
 from kivymd.uix.button import MDRaisedButton, MDIconButton
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.scrollview import ScrollView
+from kivy.uix.label import Label
 
 KV = """
 ScreenManager:
@@ -112,11 +114,10 @@ ScreenManager:
 
 
 class Book:
-    def __init__(self, name, author, price, category):
+    def __init__(self, name, author, price):
         self.name = name
         self.author = author
         self.price = price
-        self.category = category
 
 
 class MainScreen(Screen):
@@ -134,11 +135,9 @@ class UploadScreen(Screen):
 class AdminApp(MDApp):
     def build(self):
         self.books = {
-            "Fiction": ["Book 1", "Book 2"],
-            "Non-Fiction": ["Book 3", "Book 4"],
-            "Science": ["Book 5", "Book 6"],
-            "History": ["Book 7", "Book 8"],
-            "Technology": ["AI Revolution", "Cyber Security 101", "Python for AI"]
+            "Fiction": [Book("Book 1", "Author A", "10.99"), Book("Book 2", "Author B", "12.50")],
+            "Technology": [Book("AI Revolution", "John Smith", "25.00"),
+                           Book("Cyber Security 101", "Alice Brown", "30.00")]
         }
         return Builder.load_string(KV)
 
@@ -151,41 +150,20 @@ class AdminApp(MDApp):
 
         for category, books in self.books.items():
             panel_content = MDBoxLayout(orientation='vertical', adaptive_height=True, padding="10dp", spacing="10dp")
+            panel_content.add_widget(Label(text="", size_hint_y=None, height=10))  # Add spacing
             for book in books:
-                book_item = BoxLayout(orientation='horizontal', size_hint_y=None, height=40)
-                book_item.add_widget(OneLineListItem(text=book))
+                book_item = BoxLayout(orientation='horizontal', size_hint_y=None, height=60, padding="5dp")
+                book_item.add_widget(OneLineListItem(text=f"{book.name} - {book.author} ({book.price}$)"))
                 delete_btn = MDIconButton(icon="delete",
                                           on_release=lambda x, c=category, b=book: self.delete_book(c, b))
                 book_item.add_widget(delete_btn)
                 panel_content.add_widget(book_item)
-
             book_list.add_widget(
                 MDExpansionPanel(
                     content=panel_content,
                     panel_cls=MDExpansionPanelOneLine(text=category)
                 )
             )
-
-    def show_profile(self):
-        print("Opening Profile Page")
-
-    def switch_to_admin_panel(self):
-        self.root.current = "admin"
-
-    def switch_to_main_screen(self):
-        self.root.current = "main"
-
-    def switch_to_upload_screen(self):
-        self.root.current = "upload"
-
-    def upload_books(self):
-        print("Uploading Books")
-
-    def discount_category(self):
-        print("Applying Discount to Book Category")
-
-    def delete_comment(self):
-        print("Deleting Malicious Comment")
 
     def save_book(self):
         name = self.root.get_screen('upload').ids.book_name.text
@@ -196,8 +174,7 @@ class AdminApp(MDApp):
         if name and author and price and category:
             if category not in self.books:
                 self.books[category] = []
-            self.books[category].append(name)
-            print(f"Saved: {name}, {author}, {price}, {category}")
+            self.books[category].append(Book(name, author, price))
             self.update_book_list()
             self.switch_to_admin_panel()
         else:
@@ -208,9 +185,16 @@ class AdminApp(MDApp):
             self.books[category].remove(book)
             if not self.books[category]:
                 del self.books[category]
-            print(f"Deleted: {book} from {category}")
             self.update_book_list()
+
+    def switch_to_admin_panel(self):
+        self.root.current = "admin"
+
+    def switch_to_main_screen(self):
+        self.root.current = "main"
+
+    def switch_to_upload_screen(self):
+        self.root.current = "upload"
 
 
 AdminApp().run()
-
