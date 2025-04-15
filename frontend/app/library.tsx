@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function Home() {
+export default function Library() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>🏠 Home</Text>
+      <Text style={styles.text}>📚 Library</Text>
     </View>
   );
 }
