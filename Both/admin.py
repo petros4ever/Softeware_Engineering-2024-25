@@ -1,6 +1,7 @@
 from kivy.lang import Builder
 from kivymd.app import MDApp
-from kivymd.uix.screen import Screen, ScreenManager
+from kivymd.uix.screen import MDScreen
+from kivymd.uix.screenmanager import ScreenManager
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.list import OneLineListItem, IRightBodyTouch
 from kivymd.uix.expansionpanel import MDExpansionPanel, MDExpansionPanelOneLine
@@ -132,15 +133,15 @@ class Book:
         self.price = price
 
 
-class MainScreen(Screen):
+class MainScreen(MDScreen):
     pass
 
 
-class AdminScreen(Screen):
+class AdminScreen(MDScreen):
     pass
 
 
-class UploadScreen(Screen):
+class UploadScreen(MDScreen):
     pass
 
 
