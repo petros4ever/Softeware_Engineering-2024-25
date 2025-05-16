@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "category": "offers",
+    "title": "Νέα ειδοποίηση",
+    "content": "Δείγμα...",
+    "timestamp": "2025-05-16T22:37:50.092354",
+    "read": false
+  },
+  {
+    "id": 2,
+    "category": "offers",
+    "title": "Νέα ειδοποίηση",
+    "content": "Δείγμα...",
+    "timestamp": "2025-05-16T22:43:37.973185",
+    "read": false
+  },
+  {
+    "id": 3,
+    "category": "community",
+    "title": "Νέα ειδοποίηση",
+    "content": "Δείγμα...",
+    "timestamp": "2025-05-16T22:43:57.392523",
+    "read": true
+  },
+  {
+    "id": 4,
+    "category": "community",
+    "title": "Νέα ειδοποίηση",
+    "content": "Δείγμα...",
+    "timestamp": "2025-05-16T22:44:14.254646",
+    "read": false
+  },
+  {
+    "id": 6,
+    "category": "requests",
+    "title": "Νέα ειδοποίηση",
+    "content": "Δείγμα...",
+    "timestamp": "2025-05-16T22:44:29.712672",
+    "read": false
+  }
+]
